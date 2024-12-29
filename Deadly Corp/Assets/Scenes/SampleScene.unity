@@ -572,7 +572,7 @@ GameObject:
   - component: {fileID: 694559872}
   - component: {fileID: 694559871}
   m_Layer: 3
-  m_Name: Cube
+  m_Name: Base Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1247,6 +1247,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   groundSpeed: 10
+  maxGroundSpeed: 5
   decelerationSpeed: 5
   rb: {fileID: 855306415}
   jumpForce: 10
@@ -1299,7 +1300,7 @@ GameObject:
   - component: {fileID: 1335857967}
   - component: {fileID: 1335857966}
   m_Layer: 3
-  m_Name: Cube (1)
+  m_Name: Pillar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

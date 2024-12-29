@@ -6,6 +6,7 @@ using UnityEngine.Animations;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float groundSpeed; // Base Speed of player
+    [SerializeField] private float maxGroundSpeed; // Max Base Speed of player
     [SerializeField] private float decelerationSpeed; // Base Speed of player
     [SerializeField] private Rigidbody rb; // Player Rigidbody
 
@@ -26,43 +27,58 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate() // Runs Once per physics tick
     { 
-        // Make our Player move, get our input vector so our movements match the cameras position.
-        Vector3 movementInputVector = ((XInput * transform.right) + (ZInput * transform.forward)).normalized;
-        rb.AddForce(movementInputVector * groundSpeed);
+        Move(); // Move character
 
-        // If the player is moving while not inputting anything, reduce their speed to zero (except for falling speed) by x amount of time
-        if(IsMovingNoInput())
-        {
-            rb.velocity = Vector3.Lerp(rb.velocity, new Vector3(0,rb.velocity.y,0),decelerationSpeed * Time.deltaTime);
-            // FUN IDEA: Make it so it takes longer to reduce speed give how fast you are going.
-        }
+        IsMovingNoInput(); // Deccelerate player if there is no input
 
-        // LERP VELOCITY DOWN TO MAX SPEED IF WE EXCEED IT # NEXT TASK
+        MaxVelocity(); // Clamp Velocity to max speed
     }
 
     private void Update() // Runs Once per frame
     { 
+        GetInputs(); // Get keyboard Inputs
+
+        if (Input.GetKeyDown(KeyCode.Space)){if(GroundCheck() || decreasingCoyoteTime){Jump();}} // Let player Jump if on ground or in coyote time
+    }
+    
+    private void GetInputs() // Gets any inputs we need from the keyboard
+    {
         // Get the wasd Inputs
         XInput = Input.GetAxisRaw("Horizontal");
         ZInput = Input.GetAxisRaw("Vertical");
-
-        // If the player tries to jump, do a ground check or check if we are in coyote time.
-        if (Input.GetKeyDown(KeyCode.Space))
+    }
+    private void Move() // Makes character move by adding force
+    {
+        Vector3 movementInputVector = ((XInput * transform.right) + (ZInput * transform.forward)).normalized; //get our input vector so our movements match the cameras position.
+        rb.AddForce(movementInputVector * groundSpeed);
+    }
+    private void MaxVelocity() // Clamp the velocity to our max speed and negative max speed
+    {
+        //-----------------------
+        // Trying to make it so you dont move faster when moving diagonally
+        int diagonalMovementScaling;
+        float scaledMaxGroundSpeed;
+        if(XInput != 0 && ZInput != 0)
         {
-            if(GroundCheck() || decreasingCoyoteTime)
-            {
-                // Make the player jump, and stop the coyoteTime Coroutine
-                Jump();
-                StopCoroutine(DecreaseCoyoteTime());
-                decreasingCoyoteTime = false;
-            }
+            diagonalMovementScaling = 1; // tried this at value '2' but still felt weird
         }
+        else
+        {
+            diagonalMovementScaling = 1;
+        }
+        scaledMaxGroundSpeed = maxGroundSpeed / diagonalMovementScaling;
+        //-----------------------
+
+        // Clamp Velocity
+        rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x, -scaledMaxGroundSpeed, scaledMaxGroundSpeed),rb.velocity.y,Mathf.Clamp(rb.velocity.z, -scaledMaxGroundSpeed, scaledMaxGroundSpeed));
     }
 
-    private bool IsMovingNoInput() // Returns if The player is moving while not inputting anything
+    private void IsMovingNoInput() // If we are moving while not inputting anything, reduce our speed on that specific axis to zero
     {
-        if(XInput == 0f && ZInput == 0f && rb.velocity.magnitude > 0f){return true;}
-        else{return false;}
+        if(XInput == 0f && rb.velocity.x != 0f || ZInput == 0f && rb.velocity.z != 0f)
+        {
+            rb.velocity = Vector3.Lerp(rb.velocity, new Vector3(rb.velocity.x * Mathf.Abs(XInput),rb.velocity.y,rb.velocity.z * Mathf.Abs(ZInput)),decelerationSpeed * Time.deltaTime);
+        }
     }
 
     private void Jump() // Is called when the player tried and is allowed to jump
@@ -70,7 +86,8 @@ public class PlayerController : MonoBehaviour
         hasJumped = true; // let the engine know we have jumped.
         rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z); //remove our falling velocity so our jump doesnt have to fight gravity.
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); // add a force upward
-        
+        StopCoroutine(DecreaseCoyoteTime());
+        decreasingCoyoteTime = false;
     }
 
     private IEnumerator DecreaseCoyoteTime() // This coroutine decreases jump coyote time and doesnt let the player jump once its done running 
