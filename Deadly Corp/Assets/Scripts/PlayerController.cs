@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
     { 
         Move(); // Move character
 
-        IsMovingNoInput(); // Deccelerate player if there is no input
+        //IsMovingNoInput(); // Deccelerate player if there is no input
 
         MaxVelocity(); // Clamp Velocity to max speed
     }
@@ -54,23 +54,30 @@ public class PlayerController : MonoBehaviour
     }
     private void MaxVelocity() // Clamp the velocity to our max speed and negative max speed
     {
-        //-----------------------
-        // Trying to make it so you dont move faster when moving diagonally
-        int diagonalMovementScaling;
-        float scaledMaxGroundSpeed;
-        if(XInput != 0 && ZInput != 0)
-        {
-            diagonalMovementScaling = 1; // tried this at value '2' but still felt weird
-        }
-        else
-        {
-            diagonalMovementScaling = 1;
-        }
-        scaledMaxGroundSpeed = maxGroundSpeed / diagonalMovementScaling;
-        //-----------------------
+        // //-----------------------
+        // // Trying to make it so you dont move faster when moving diagonally
+        // int diagonalMovementScaling;
+        // float scaledMaxGroundSpeed;
+        // if(XInput != 0 && ZInput != 0)
+        // {
+        //     diagonalMovementScaling = 1; // tried this at value '2' but still felt weird
+        // }
+        // else
+        // {
+        //     diagonalMovementScaling = 1;
+        // }
+        // scaledMaxGroundSpeed = maxGroundSpeed / diagonalMovementScaling;
+        // //-----------------------
 
-        // Clamp Velocity
-        rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x, -scaledMaxGroundSpeed, scaledMaxGroundSpeed),rb.velocity.y,Mathf.Clamp(rb.velocity.z, -scaledMaxGroundSpeed, scaledMaxGroundSpeed));
+        // // Clamp Velocity
+        // rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x, -scaledMaxGroundSpeed, scaledMaxGroundSpeed),rb.velocity.y,Mathf.Clamp(rb.velocity.z, -scaledMaxGroundSpeed, scaledMaxGroundSpeed));
+
+        Vector3 flatVelocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z); // making sure this upcoming chunk of code only affects horizontal movement, no impact on vertical velocity
+        if (flatVelocity.magnitude > maxGroundSpeed) // checking to see if we're moving too fast on the ground
+        {
+            Vector3 cappedVelocity = flatVelocity.normalized * maxGroundSpeed; // get our current movement DIRECTION (normalized velocity) and set its magnitude to our max ground speed
+            rb.velocity = new Vector3(cappedVelocity.x, rb.velocity.y, cappedVelocity.z); // set the velocity of the player to this new capped velocity
+        }
     }
 
     private void IsMovingNoInput() // If we are moving while not inputting anything, reduce our speed on that specific axis to zero
