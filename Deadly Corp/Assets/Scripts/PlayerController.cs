@@ -29,8 +29,6 @@ public class PlayerController : MonoBehaviour
     { 
         Move(); // Move character
 
-        //IsMovingNoInput(); // Deccelerate player if there is no input
-
         MaxVelocity(); // Clamp Velocity to max speed
     }
 
@@ -39,6 +37,8 @@ public class PlayerController : MonoBehaviour
         GetInputs(); // Get keyboard Inputs
 
         if (Input.GetKeyDown(KeyCode.Space)){if(GroundCheck() || decreasingCoyoteTime){Jump();}} // Let player Jump if on ground or in coyote time
+
+        GroundDecellerate(); // Decellerate player when on ground
     }
     
     private void GetInputs() // Gets any inputs we need from the keyboard
@@ -50,28 +50,10 @@ public class PlayerController : MonoBehaviour
     private void Move() // Makes character move by adding force
     {
         Vector3 movementInputVector = ((XInput * transform.right) + (ZInput * transform.forward)).normalized; //get our input vector so our movements match the cameras position.
-        rb.AddForce(movementInputVector * groundSpeed);
+        rb.AddForce(movementInputVector * groundSpeed, ForceMode.Force);
     }
     private void MaxVelocity() // Clamp the velocity to our max speed and negative max speed
     {
-        // //-----------------------
-        // // Trying to make it so you dont move faster when moving diagonally
-        // int diagonalMovementScaling;
-        // float scaledMaxGroundSpeed;
-        // if(XInput != 0 && ZInput != 0)
-        // {
-        //     diagonalMovementScaling = 1; // tried this at value '2' but still felt weird
-        // }
-        // else
-        // {
-        //     diagonalMovementScaling = 1;
-        // }
-        // scaledMaxGroundSpeed = maxGroundSpeed / diagonalMovementScaling;
-        // //-----------------------
-
-        // // Clamp Velocity
-        // rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x, -scaledMaxGroundSpeed, scaledMaxGroundSpeed),rb.velocity.y,Mathf.Clamp(rb.velocity.z, -scaledMaxGroundSpeed, scaledMaxGroundSpeed));
-
         Vector3 flatVelocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z); // making sure this upcoming chunk of code only affects horizontal movement, no impact on vertical velocity
         if (flatVelocity.magnitude > maxGroundSpeed) // checking to see if we're moving too fast on the ground
         {
@@ -80,12 +62,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void IsMovingNoInput() // If we are moving while not inputting anything, reduce our speed on that specific axis to zero
+    private void GroundDecellerate() // Add drag for player when on ground, has them deccelerate when not moving
     {
-        if(XInput == 0f && rb.velocity.x != 0f || ZInput == 0f && rb.velocity.z != 0f)
-        {
-            rb.velocity = Vector3.Lerp(rb.velocity, new Vector3(rb.velocity.x * Mathf.Abs(XInput),rb.velocity.y,rb.velocity.z * Mathf.Abs(ZInput)),decelerationSpeed * Time.deltaTime);
-        }
+        if(onGround){rb.drag = decelerationSpeed;}
+        else{rb.drag = 0;}
     }
 
     private void Jump() // Is called when the player tried and is allowed to jump
@@ -95,6 +75,7 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); // add a force upward
         StopCoroutine(DecreaseCoyoteTime());
         decreasingCoyoteTime = false;
+        onGround = false;
     }
 
     private IEnumerator DecreaseCoyoteTime() // This coroutine decreases jump coyote time and doesnt let the player jump once its done running 

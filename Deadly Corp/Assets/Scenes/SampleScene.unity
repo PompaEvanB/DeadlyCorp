@@ -1246,9 +1246,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f1d1c26a9c945d4b87fbc98d9ea890d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundSpeed: 10
-  maxGroundSpeed: 5
-  decelerationSpeed: 5
+  groundSpeed: 50
+  maxGroundSpeed: 7
+  decelerationSpeed: 5.5
   rb: {fileID: 855306415}
   jumpForce: 10
   decreasingCoyoteTime: 0
