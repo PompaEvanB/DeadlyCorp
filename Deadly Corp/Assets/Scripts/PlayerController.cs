@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.Animations;
+using Unity.Netcode;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private float groundSpeed; // Base Speed of player
     [SerializeField] private float maxGroundSpeed; // Max Base Speed of player
@@ -25,20 +27,55 @@ public class PlayerController : MonoBehaviour
     [SerializeField] LayerMask groundLayers; // Layer the groundcheck raycast looks for
     [SerializeField] float groundCheckDist; // Length of the raycast
 
+    public override void OnNetworkSpawn()
+    {
+        if (!IsOwner)
+        {
+            Destroy(GetComponentInChildren<Camera>().gameObject); // ensures there is only one camera in the scene for each client
+        }
+    }
+
     private void FixedUpdate() // Runs Once per physics tick
     { 
-        Move(); // Move character
+        if (IsOwner) // ensures that this code is only executed on the client game object by the client
+        {
+            Move(); // Move character
 
-        MaxVelocity(); // Clamp Velocity to max speed
+            MaxVelocity(); // Clamp Velocity to max speed
+        }
     }
 
     private void Update() // Runs Once per frame
     { 
-        GetInputs(); // Get keyboard Inputs
+        if (IsOwner) // ensures that this code is only executed on the client game object by the client
+        {
+            GetInputs(); // Get keyboard Inputs
 
-        if (Input.GetKeyDown(KeyCode.Space)){if(GroundCheck() || decreasingCoyoteTime){Jump();}} // Let player Jump if on ground or in coyote time
+            if (Input.GetKeyDown(KeyCode.Space)){if(GroundCheck() || decreasingCoyoteTime){Jump();}} // Let player Jump if on ground or in coyote time
 
-        GroundDecellerate(); // Decellerate player when on ground
+            GroundDecellerate(); // Decellerate player when on ground
+
+            SendNetworkInfo();
+        }
+        else
+        {
+            GetNetworkInfo();
+        }
+    }
+
+    private NetworkVariable<Vector3> networkPosition = new(writePerm: NetworkVariableWritePermission.Owner);
+    private NetworkVariable<Quaternion> networkRotation = new(writePerm: NetworkVariableWritePermission.Owner);
+
+    private void SendNetworkInfo()
+    {
+        networkPosition.Value = transform.position;
+        networkRotation.Value = transform.rotation;
+    }
+
+    private void GetNetworkInfo()
+    {
+        transform.position = networkPosition.Value;
+        transform.rotation = networkRotation.Value;
     }
     
     private void GetInputs() // Gets any inputs we need from the keyboard
