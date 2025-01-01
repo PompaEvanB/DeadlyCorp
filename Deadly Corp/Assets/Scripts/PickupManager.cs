@@ -5,6 +5,11 @@ using UnityEngine.Events;
 
 public class PickupManager : MonoBehaviour
 {
+    [Header("Basics")]
+    public float pickupRange;
+    public LayerMask itemLayers;
+    bool holdingItem;
+
     [Header("Events")]
     public UnityEvent onPickup;
     public UnityEvent onDrop;
@@ -16,11 +21,6 @@ public class PickupManager : MonoBehaviour
     Transform cam;
     [SerializeField]
     Transform holdPoint;
-    public LayerMask itemLayers;
-
-    //[HideInInspector]
-    public bool isNearItem;
-    bool holdingItem;
 
     void Update()
     {
@@ -45,12 +45,9 @@ public class PickupManager : MonoBehaviour
 
     void HandleSelection()
     {
-        if (isNearItem)
-        {
-            RaycastHit hit;
-            Physics.Raycast(cam.position, cam.forward, out hit, Mathf.Infinity, itemLayers);
-            selectedItem = hit.transform;
-        }
+        RaycastHit hit;
+        Physics.Raycast(cam.position, cam.forward, out hit, pickupRange, itemLayers);
+        selectedItem = hit.transform;
     }
 
     void PickupItem()
