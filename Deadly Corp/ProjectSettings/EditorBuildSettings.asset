@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Anthony.unity
     guid: 1e0077057db577a4b9e7f087e7e54348
+  - enabled: 1
+    path: Assets/Scenes/Alexis.unity
+    guid: 4b70be2bcce5e39458add51bce3f42a5
   m_configObjects: {}

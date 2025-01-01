@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &744258129573909308
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2555665660547150157}
+  m_Layer: 0
+  m_Name: ItemHoldPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2555665660547150157
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 744258129573909308}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.5, y: 0.25, z: 0.25000003}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 48010961356229965}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4546855769089645863
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,6 +302,7 @@ GameObject:
   - component: {fileID: 1012362837045577211}
   - component: {fileID: 4804693676637064889}
   - component: {fileID: 2447192897905275489}
+  - component: {fileID: 8143088172857563945}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -293,6 +325,7 @@ Transform:
   m_Children:
   - {fileID: 4721850530819855329}
   - {fileID: 5265850487397054896}
+  - {fileID: 2555665660547150157}
   m_Father: {fileID: 6148131281391677607}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6249693758436290977
@@ -411,7 +444,6 @@ MonoBehaviour:
   maxGroundSpeed: 7
   decelerationSpeed: 5.5
   rb: {fileID: 4804693676637064889}
-  camObject: {fileID: 4546855769089645863}
   jumpForce: 10
   decreasingCoyoteTime: 0
   hasCoyoteTime: 1
@@ -420,6 +452,30 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   groundCheckDist: 1.1
+--- !u!114 &8143088172857563945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8346780686843095387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e3e1c6937552eb46bbdb0045b8ab87a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onPickup:
+    m_PersistentCalls:
+      m_Calls: []
+  onDrop:
+    m_PersistentCalls:
+      m_Calls: []
+  cam: {fileID: 4721850530819855329}
+  holdPoint: {fileID: 2555665660547150157}
+  itemLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  isNearItem: 0
 --- !u!1 &8831942315921801049
 GameObject:
   m_ObjectHideFlags: 0
