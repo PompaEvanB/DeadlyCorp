@@ -464,6 +464,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e3e1c6937552eb46bbdb0045b8ab87a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pickupRange: 5
+  itemLayers:
+    serializedVersion: 2
+    m_Bits: 64
   onPickup:
     m_PersistentCalls:
       m_Calls: []
@@ -472,10 +476,6 @@ MonoBehaviour:
       m_Calls: []
   cam: {fileID: 4721850530819855329}
   holdPoint: {fileID: 2555665660547150157}
-  itemLayers:
-    serializedVersion: 2
-    m_Bits: 64
-  isNearItem: 0
 --- !u!1 &8831942315921801049
 GameObject:
   m_ObjectHideFlags: 0
